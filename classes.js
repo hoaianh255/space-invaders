@@ -6,10 +6,10 @@ class Player {
       y: 0
     }
     this.rotation = 0;
-    this.scale = 0.15;
+    this.scale = 0.2;
     // create image
     const image = new Image();
-    image.src = './img/spaceship.png';
+    image.src = './img/spaceship-2-resize.png';
     // wait for the image finishes loading
     image.onload = () => {
       this.image = image;
@@ -55,7 +55,7 @@ class Projectile {
     this.position = position;
     this.velocity = velocity;
 
-    this.radius = 3;
+    this.radius = 4;
   }
   draw() {
     c.beginPath();
