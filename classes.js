@@ -1,125 +1,194 @@
+class Sprite {
+  constructor({ position, imgSrc, scale = 1, lineImg = 1, frames = 1, offset = { x: 0, y: 0 } }, explodeSrc = '') {
+    this.position = position;
+    this.imgSrc = imgSrc;
+    this.scale = scale;
+    this.frames = frames;
+    this.offset = offset;
+    this.frameCurrent = 0;
+    this.frameEllapse = 0;
+    this.frameHolder = 5;
+    this.image = new Image();
+    this.image.src = this.imgSrc;
+    this.lineImg = lineImg;
+    this.explodeSrc = explodeSrc;
+  }
+  draw() {
+    c.drawImage(
+      this.image,
+      this.frameCurrent * (this.image.width / this.frames),
+      0,
+      this.image.width / this.frames,
+      this.image.height,
+      this.position.x,
+      this.position.y,
+      (this.image.width / this.frames) * this.scale,
+      this.image.height * this.scale);
+  }
+  animeFrames() {
+    this.frameEllapse++;
+    if (this.frameEllapse % this.frameHolder === 0) {
+      if (this.frameCurrent < this.frames - 1) {
+        this.frameCurrent++;
+      } else this.frameCurrent = 0;
+    }
+  }
+  update() {
+    this.draw();
+    if (this.frames > 1) this.animeFrames();
+  }
+}
 
-class Player {
-  constructor() {
+
+class Player extends Sprite {
+  constructor({ imgSrc, lineImg, scale = 1, frames = 1, offset = { x: 0, y: 0 }, explodeSrc }) {
+    super({
+      imgSrc,
+      lineImg,
+      scale,
+      frames,
+      offset,
+      explodeSrc
+    })
+    this.position = {
+      x: canvas.width / 2,
+      y: canvas.height - 100
+    }
     this.velocity = {
       x: 0,
       y: 0
     }
     this.rotation = 0;
-    this.scale = 0.2;
-    // create image
-    const image = new Image();
-    image.src = './img/spaceship-2-resize.png';
-    // wait for the image finishes loading
-    image.onload = () => {
-      this.image = image;
-      this.width = this.image.width * this.scale;
-      this.height = this.image.width * this.scale;
-      this.position = {
-        x: canvas.width / 2 - this.width / 2,
-        y: canvas.height - this.height - 50
-      }
-    }
-
+    this.lastKey;
+    this.explodeImg = new Image();
+    this.explodeImg.src = explodeSrc;
   }
   draw() {
-    // this rotate canvas
-    c.save();
-
-    c.translate(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2
-    );
-
-    c.rotate(this.rotation);
-    // rotate back
-    c.translate(
-      -this.position.x - this.width / 2,
-      -this.position.y - this.height / 2
-    );
-    if (this.image) {
-      c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+    if (this.lineImg > 1) {
+      c.drawImage(
+        this.image,
+        this.frameCurrent * (this.image.width / this.frames),
+        this.image.height / this.lineImg,
+        this.image.width / this.frames,
+        this.image.height / this.lineImg,
+        this.position.x - this.offset.x,
+        this.position.y - this.offset.y,
+        (this.image.width / this.frames) * this.scale,
+        (this.image.height / this.lineImg) * this.scale);
+    } else {
+      c.drawImage(
+        this.image,
+        this.frameCurrent * (this.image.width / this.frames),
+        0,
+        this.image.width / this.frames,
+        this.image.height,
+        this.position.x - this.offset.x,
+        this.position.y - this.offset.y,
+        (this.image.width / this.frames) * this.scale,
+        this.image.height * this.scale);
     }
-    c.restore()
   }
   update() {
-    if (this.image) {
-      this.draw();
-      this.position.x += this.velocity.x;
-    }
+    this.draw();
+    if (this.frames > 1) this.animeFrames();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
+  explode() {
+    this.image = this.explodeImg;
+    this.frames = 5;
+    this.lineImg = 1;
+    this.frameCurrent = 0;
   }
 }
 
-class Projectile {
+class Projectile extends Sprite {
+  constructor({ position, velocity, imgSrc, scale = 1, frames = 1, offset = { x: 0, y: 0 } }) {
+    super({
+      position,
+      imgSrc,
+      scale,
+      frames,
+      offset
+    })
+    this.position = position;
+    this.velocity = velocity;
+  }
+  draw() {
+    c.drawImage(
+      this.image,
+      this.frameCurrent * (this.image.width / this.frames),
+      0,
+      this.image.width / this.frames,
+      this.image.height / this.lineImg,
+      this.position.x + this.offset.x,
+      this.position.y,
+      (this.image.width / this.frames) * this.scale,
+      (this.image.height / this.lineImg) * this.scale);
+  }
+  update() {
+    this.draw();
+    if (this.frames > 1) this.animeFrames();
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+  }
+}
+
+
+class Invader extends Sprite {
+  constructor({ position, velocity = { x: 0, y: 5 }, imgSrc, scale = 1, frames = 1, offset = { x: 0, y: 0 },explodeSrc }) {
+    super({
+      position,
+      imgSrc,
+      scale,
+      frames,
+      offset
+    })
+    this.velocity = velocity;
+    this.explodeImg = new Image();
+    this.explodeImg.src = explodeSrc;
+  }
+
+  update() {
+    this.draw();
+    if (this.frames > 1) this.animeFrames();
+    this.position.y += this.velocity.y;
+  }
+  explode() {
+    this.image = this.explodeImg;
+    this.frames = 5;
+    this.lineImg = 1;
+    this.scale = 2; 
+    this.frameCurrent = 0;
+  }
+  shoot(invaderProjectiles) {
+    invaderProjectiles.push(new InvaderProjectile({
+      position: {
+        x: this.position.x + (this.image.width / this.frames) / 2,
+        y: this.position.y + this.image.height
+      },
+      velocity: {
+        x: 0,
+        y: 5
+      }
+    }))
+  }
+}
+
+class InvaderProjectile {
   constructor({ position, velocity }) {
     this.position = position;
     this.velocity = velocity;
-
-    this.radius = 4;
+    this.width = 3;
+    this.height = 10;
   }
   draw() {
-    c.beginPath();
-    c.arc(this.position.x, this.position.y, this.radius, 1, Math.PI * 2);
-    c.fillStyle = 'yellow';
-    c.fill();
-    c.closePath()
+    c.fillStyle = 'white';
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
   }
   update() {
     this.draw();
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
-  }
-}
-
-class Invader {
-  constructor({ position = { x: 0, y: 0 } }) {
-    this.position = position;
-    this.velocity = { x: 0, y: 0 }
-    this.scale = 1;
-
-    const image = new Image();
-    image.src = './img/invader.png';
-    image.onload = () => {
-      this.image = image;
-      this.width = this.image.width * this.scale;
-      this.height = this.image.height * this.scale;
-    };
-  }
-  draw() {
-    c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height)
-  }
-
-  update({ velocity }) {
-    if (this.image) {
-      this.draw();
-      this.position.x += velocity.x;
-      this.position.y += velocity.y;
-    }
-  }
-}
-
-
-class Grid {
-  constructor() {
-    this.position = { x: 0, y: 0 }
-    this.velocity = { x: 3, y: 0 }
-    this.invaders = [new Invader(this.position)];
-    const columns = Math.floor(Math.random() * 8 + 2);
-    const rows = Math.floor(Math.random() * 4 + 2);
-    this.width = columns * 30;
-    for (let x = 0; x < columns; x++) {
-      for (let y = 0; y < rows; y++) {
-        this.invaders.push(new Invader({ position: { x: x * 30, y: y * 30 } }))
-      }
-    }
-  }
-  update() {
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
-    this.velocity.y =0;
-    if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
-      this.velocity.x = -this.velocity.x;
-      this.velocity.y = 30;
-    }
   }
 }

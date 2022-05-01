@@ -7,15 +7,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Space Invaders Game</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     body {
       margin: 0;
       overflow-x: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
+    .game-screen {
+      display: inline-block;
+      position: relative;
+    }
+    #alert {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      font-size: 36px;
+      font-family: 'Press Start 2P', cursive;
+      opacity: 0;
+      transition: opacity 1s;
+      color: yellow
+    }
+    #scored-text {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 16px;
+      font-family: 'Press Start 2P', cursive;
+    }
+    
   </style>
 </head>
 
 <body>
-  <canvas></canvas>
+  <div class="game-screen">
+    <p id="alert"></p>
+    <p id="scored-text">Scored: <span id="scored"></span></p>
+    <canvas></canvas>
+  </div>
   <script src="./classes.js"></script>
   <script src="./script.js"></script>
 </body>
