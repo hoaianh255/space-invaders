@@ -43,7 +43,7 @@ const background = new Sprite(
   }
 )
 // value
-let randomInterval = Math.floor(Math.random() * 200 + 100);
+let randomInterval = Math.floor(Math.random() * 100 + 100);
 
 const invaderProjectiles = [];
 
@@ -202,7 +202,7 @@ function animate() {
       }
     ));
     frames = 0;
-    randomInterval = Math.floor(Math.random() * 200 + 100);
+    randomInterval = Math.floor(Math.random() * 100 + 100);
   }
 
 

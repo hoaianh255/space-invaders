@@ -13,8 +13,13 @@
       overflow-x: hidden;
       display: flex;
       justify-content: center;
+      flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      font-family: 'Press Start 2P', cursive;
+      background: black;
+      background-size: contain;
+
     }
     .game-screen {
       display: inline-block;
@@ -26,7 +31,6 @@
       left: 50%;
       transform: translate(-50%,-50%);
       font-size: 36px;
-      font-family: 'Press Start 2P', cursive;
       opacity: 0;
       transition: opacity 1s;
       color: yellow
@@ -37,7 +41,6 @@
       left: 20px;
       color: white;
       font-size: 16px;
-      font-family: 'Press Start 2P', cursive;
     }
     
   </style>
@@ -49,6 +52,7 @@
     <p id="scored-text">Scored: <span id="scored"></span></p>
     <canvas></canvas>
   </div>
+  <p style="color: #30336b;margin-top: 30px">Press <span style="color: #eb4d4b;">A, D, W, S</span> to movement and <span style="color: #eb4d4b;">Space</span> to attack</p>
   <script src="./classes.js"></script>
   <script src="./script.js"></script>
 </body>
